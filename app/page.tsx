@@ -18,11 +18,8 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-900 to-black">
       <Header />
-
       <Gallery />
-
       <UploadButton onClick={() => setIsUploadModalOpen(true)} />
-
       <UploadModal
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
