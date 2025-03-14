@@ -21,7 +21,7 @@ export default function ImageModal({
       <DialogContent className="sm:max-w-[900px] bg-gray-900 border border-gray-800 p-0 overflow-hidden">
         <div className="relative aspect-video w-full">
           <Image
-            src={image.gallery_url}
+            src={image.original_url}
             alt={image.description || 'Gallery image'}
             fill
             className="object-contain"
