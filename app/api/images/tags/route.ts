@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { EXTREME_SPORT_TAG } from '../../../constants';
 
 const SUPABASE_URL = 'https://wkuhfuofhpjuwilhhtnj.supabase.co/functions/v1';
 
