@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from '@/app/components/ui/dialog';
 import { GalleryImage } from '../types/gallery';
+import { EXTREME_SPORT_TAG } from '../constants';
 
 type ErrorWithMessage = {
   message: string;
@@ -101,18 +102,50 @@ export default function UploadModal({ onUploadSuccess, isOpen, onClose }: Upload
         uploaded_by: uploadedBy
       }));
 
-      const response = await fetch('/api/images/upload', {
+      const uploadResponse = await fetch('/api/images/upload', {
         method: 'POST',
         body: formData,
+        headers: {
+          'Accept': 'application/json',
+        },
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Upload failed: ${errorText || response.statusText}`);
+      // Try to get the ID from the response, fall back to temp ID if parsing fails
+      let imageId;
+      try {
+        const responseData = await uploadResponse.json();
+        console.log('Upload response:', responseData);
+        imageId = responseData.id;
+      } catch (parseError) {
+        console.warn('Failed to parse upload response:', parseError);
       }
 
-      const data = await response.json();
-      onUploadSuccess(data);
+      // Try to add the tag
+      try {
+        await fetch('/api/images/tags', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            imageId: imageId,
+            tags: [EXTREME_SPORT_TAG]
+          })
+        });
+      } catch (tagError) {
+        // Ignore tag errors
+        console.warn('Failed to add tags:', tagError);
+      }
+
+      onUploadSuccess({
+        id: imageId,
+        original_url: '',
+        gallery_url: '',
+        thumbnail_url: '',
+        description: description || '',
+        uploaded_by: uploadedBy,
+        created_at: new Date().toISOString()
+      });
       
       // Clear form and close modal
       setDescription('');

@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
+import { EXTREME_SPORT_TAG } from '../../constants';
 
 const SUPABASE_URL = 'https://wkuhfuofhpjuwilhhtnj.supabase.co/functions/v1';
 
-
 export async function GET() {
   try {
-    const response = await fetch(`${SUPABASE_URL}/list-images`, {
+    const response = await fetch(`${SUPABASE_URL}/list-images?tags=${EXTREME_SPORT_TAG}`, {
       headers: {
         'Accept': 'application/json',
       },

@@ -1,0 +1,1 @@
+export const EXTREME_SPORT_TAG = 'extremesport'; 
