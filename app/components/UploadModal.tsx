@@ -8,14 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/app/components/ui/dialog';
-
-interface UploadResponse {
-  id: string;
-  originalUrl: string;
-  galleryUrl: string;
-  thumbnailUrl: string;
-  description: string;
-}
+import { GalleryImage } from '../types/gallery';
 
 type ErrorWithMessage = {
   message: string;
@@ -46,7 +39,7 @@ function getErrorMessage(error: unknown) {
 }
 
 interface UploadModalProps {
-  onUploadSuccess: (image: UploadResponse) => void;
+  onUploadSuccess: (image: GalleryImage) => void;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -105,25 +98,21 @@ export default function UploadModal({ onUploadSuccess, isOpen, onClose }: Upload
       formData.append('image', selectedImage);
       formData.append('metadata', JSON.stringify({
         description,
-        uploadedBy
+        uploaded_by: uploadedBy
       }));
 
-      await fetch('https://wkuhfuofhpjuwilhhtnj.supabase.co/functions/v1/upload-image', {
+      const response = await fetch('/api/images/upload', {
         method: 'POST',
         body: formData,
-        headers: {
-          'Accept': 'application/json',
-        },
       });
 
-      // If we get here, assume upload was successful despite CORS errors
-      onUploadSuccess({
-        id: 'temp-' + Date.now(),
-        originalUrl: '',
-        galleryUrl: '',
-        thumbnailUrl: '',
-        description: description || ''
-      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Upload failed: ${errorText || response.statusText}`);
+      }
+
+      const data = await response.json();
+      onUploadSuccess(data);
       
       // Clear form and close modal
       setDescription('');
@@ -133,31 +122,8 @@ export default function UploadModal({ onUploadSuccess, isOpen, onClose }: Upload
       setError(null);
       onClose();
     } catch (err: unknown) {
-      // Only show error if it's a real network failure
-      const errorMessage = getErrorMessage(err).toLowerCase();
-      if (!errorMessage.includes('cors') && 
-          !errorMessage.includes('network') &&
-          !errorMessage.includes('failed to fetch')) {
-        console.error('Upload error:', err);
-        setError(isErrorWithMessage(err) ? err.message : 'Failed to upload image. Please try again.');
-      } else {
-        // Even if we got a CORS error, assume upload was successful
-        onUploadSuccess({
-          id: 'temp-' + Date.now(),
-          originalUrl: '',
-          galleryUrl: '',
-          thumbnailUrl: '',
-          description: description || ''
-        });
-        
-        // Clear form and close modal
-        setDescription('');
-        setUploadedBy('');
-        setSelectedImage(null);
-        setPreview(null);
-        setError(null);
-        onClose();
-      }
+      console.error('Upload error:', err);
+      setError(isErrorWithMessage(err) ? err.message : 'Failed to upload image. Please try again.');
     } finally {
       setUploading(false);
     }

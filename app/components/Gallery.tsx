@@ -1,81 +1,86 @@
-import Image from "next/image";
-import { useState } from "react";
+'use client';
 
-interface GalleryImage {
-  id: string;
-  url: string;
-  description: string;
-}
-
-const mockImages: GalleryImage[] = [
-  {
-    id: "1",
-    url: "https://images.unsplash.com/photo-1564415315949-7a0c4c73aab4?auto=format&fit=crop&w=800&q=80",
-    description: "Snowboarder jumping through the air",
-  },
-  {
-    id: "2",
-    url: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=80",
-    description: "Mountain biker on a trail",
-  },
-  {
-    id: "3",
-    url: "https://images.unsplash.com/photo-1549880338-65ddcdfd017b?auto=format&fit=crop&w=800&q=80",
-    description: "Skier in the mountains",
-  },
-  {
-    id: "4",
-    url: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=80",
-    description: "Rock climber scaling a cliff",
-  },
-  {
-    id: "5",
-    url: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&w=800&q=80",
-    description: "Surfer riding a wave",
-  },
-  {
-    id: "6",
-    url: "https://images.unsplash.com/photo-1583123810408-23e7b5d1af9f?auto=format&fit=crop&w=800&q=80",
-    description: "Skateboarder in action",
-  },
-];
-
-function GalleryImage({ image }: { image: GalleryImage }) {
-  const [isLoading, setIsLoading] = useState(true);
-
-  return (
-    <div className="relative aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 bg-gray-100">
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      )}
-      <Image
-        src={image.url}
-        alt={image.description}
-        width={800}
-        height={800}
-        className={`w-full h-full object-cover transition-all duration-300 ${
-          isLoading ? "scale-110 blur-sm" : "scale-100 blur-0 hover:scale-110"
-        }`}
-        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 16.67vw"
-        priority={parseInt(image.id) <= 3} // Load first 3 images immediately
-        onLoadingComplete={() => setIsLoading(false)}
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end">
-        <p className="text-white p-4 text-sm font-medium">
-          {image.description}
-        </p>
-      </div>
-    </div>
-  );
-}
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { GalleryResponse, GalleryImage } from '../types/gallery';
 
 export default function Gallery() {
+  const [images, setImages] = useState<GalleryImage[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const response = await fetch('/api/images');
+        if (!response.ok) {
+          throw new Error('Failed to fetch images');
+        }
+        const data: GalleryResponse = await response.json();
+        setImages(data.images);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load images');
+        console.error('Error fetching images:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchImages();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[400px] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-[400px] flex items-center justify-center">
+        <div className="text-red-500">{error}</div>
+      </div>
+    );
+  }
+
+  if (images.length === 0) {
+    return (
+      <div className="min-h-[400px] flex items-center justify-center">
+        <p className="text-gray-500">No images found. Be the first to upload!</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 p-4">
-      {mockImages.map((image) => (
-        <GalleryImage key={image.id} image={image} />
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+      {images.map((image) => (
+        <div
+          key={image.id}
+          className="group relative bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
+        >
+          <div className="relative aspect-video">
+            <Image
+              src={image.gallery_url}
+              alt={image.description || 'Gallery image'}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+          </div>
+          <div className="p-4 bg-white">
+            <p className="text-sm text-gray-600 mb-1">
+              Uploaded by {image.uploaded_by}
+            </p>
+            {image.description && (
+              <p className="text-gray-800">{image.description}</p>
+            )}
+            <p className="text-xs text-gray-500 mt-2">
+              {new Date(image.created_at).toLocaleDateString()}
+            </p>
+          </div>
+        </div>
       ))}
     </div>
   );
