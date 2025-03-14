@@ -23,7 +23,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} ${audiowide.variable}`}>
+      <body
+        className={`${inter.className} ${audiowide.variable} bg-black min-h-screen`}
+      >
         {children}
       </body>
     </html>

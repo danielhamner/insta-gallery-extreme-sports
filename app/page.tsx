@@ -16,7 +16,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-900 to-black">
+    <main className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
       <Header />
       <Gallery />
       <UploadButton onClick={() => setIsUploadModalOpen(true)} />
