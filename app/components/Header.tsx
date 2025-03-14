@@ -1,8 +1,8 @@
 export default function Header() {
   return (
-    <div className="flex items-center justify-center gap-3 p-8">
+    <div className="flex items-center justify-center gap-3 p-4 sm:p-8">
       <svg
-        className="w-12 h-12 text-purple-500"
+        className="w-20 h-20 sm:w-14 sm:h-14 text-purple-500"
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -24,7 +24,7 @@ export default function Header() {
           className="text-purple-300"
         />
       </svg>
-      <h1 className="font-audiowide text-5xl bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text">
+      <h1 className="font-audiowide text-3xl sm:text-5xl md:text-center text-left bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text">
         Extreme Sports Gallery
       </h1>
     </div>
