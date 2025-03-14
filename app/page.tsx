@@ -1,6 +1,7 @@
 "use client";
 
 import Gallery from "./components/Gallery";
+import OminousTerminal from "./components/OminousTerminal";
 import UploadModal from "./components/UploadModal";
 import { useState } from "react";
 
@@ -87,6 +88,8 @@ export default function Home() {
           />
         </svg>
       </button>
+
+      <OminousTerminal />
     </main>
   );
 }
