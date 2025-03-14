@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Gallery from './components/Gallery';
 import UploadModal from './components/UploadModal';
+import OminousTerminal from './components/OminousTerminal';
 
 export default function Home() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -63,6 +64,7 @@ export default function Home() {
           onClose={() => setIsUploadModalOpen(false)}
           onUploadSuccess={handleUploadSuccess}
         />
+        <OminousTerminal/>
       </div>
     </main>
   );
