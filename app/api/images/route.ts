@@ -5,7 +5,7 @@ const SUPABASE_URL = 'https://wkuhfuofhpjuwilhhtnj.supabase.co/functions/v1';
 
 export async function GET() {
   try {
-    const response = await fetch(`${SUPABASE_URL}/list-images?tags=${EXTREME_SPORT_TAG}`, {
+    const response = await fetch(`${SUPABASE_URL}/list-images?tags=${EXTREME_SPORT_TAG}&limit=50`, {
       headers: {
         'Accept': 'application/json',
       },
