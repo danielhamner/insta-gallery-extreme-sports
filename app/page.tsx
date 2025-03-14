@@ -11,6 +11,34 @@ interface UploadResponse {
   description: string;
 }
 
+type ErrorWithMessage = {
+  message: string;
+  toString(): string;
+};
+
+function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof (error as Record<string, unknown>).message === 'string'
+  );
+}
+
+function toErrorWithMessage(maybeError: unknown): ErrorWithMessage {
+  if (isErrorWithMessage(maybeError)) return maybeError;
+
+  try {
+    return new Error(JSON.stringify(maybeError));
+  } catch {
+    return new Error(String(maybeError));
+  }
+}
+
+function getErrorMessage(error: unknown) {
+  return toErrorWithMessage(error).message;
+}
+
 export default function Home() {
   const [dragActive, setDragActive] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -93,12 +121,12 @@ export default function Home() {
         }
 
         const data = await response.json();
-        if (data && data.galleryUrl) {
+        if (data && 'galleryUrl' in data) {
           setUploadedImage(data as UploadResponse);
         }
-      } catch (parseError: any) {
+      } catch (parseError: unknown) {
         // Ignore CORS and parsing errors since the upload likely succeeded
-        const errorMessage = parseError?.toString().toLowerCase() || '';
+        const errorMessage = getErrorMessage(parseError).toLowerCase();
         if (!errorMessage.includes('cors') && !errorMessage.includes('network')) {
           throw parseError;
         }
@@ -111,12 +139,12 @@ export default function Home() {
           description: description || ''
         });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Only show error if it's not a CORS error
-      const errorMessage = err?.toString().toLowerCase() || '';
+      const errorMessage = getErrorMessage(err).toLowerCase();
       if (!errorMessage.includes('cors') && !errorMessage.includes('network')) {
         console.error('Upload error:', err);
-        setError(err instanceof Error ? err.message : 'Failed to upload image. Please try again.');
+        setError(isErrorWithMessage(err) ? err.message : 'Failed to upload image. Please try again.');
       }
     } finally {
       setUploading(false);
