@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/app/components/ui/dialog';
-import { GalleryImage } from '../types/gallery';
+
 import { EXTREME_SPORT_TAG } from '../constants';
+import { GalleryImage } from "../types/gallery";
+import Image from "next/image";
+import { X } from "lucide-react";
+import { useState } from "react";
 
 type ErrorWithMessage = {
   message: string;
@@ -18,10 +20,10 @@ type ErrorWithMessage = {
 
 function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
   return (
-    typeof error === 'object' &&
+    typeof error === "object" &&
     error !== null &&
-    'message' in error &&
-    typeof (error as Record<string, unknown>).message === 'string'
+    "message" in error &&
+    typeof (error as Record<string, unknown>).message === "string"
   );
 }
 
@@ -45,12 +47,16 @@ interface UploadModalProps {
   onClose: () => void;
 }
 
-export default function UploadModal({ onUploadSuccess, isOpen, onClose }: UploadModalProps) {
+export default function UploadModal({
+  onUploadSuccess,
+  isOpen,
+  onClose,
+}: UploadModalProps) {
   const [dragActive, setDragActive] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [description, setDescription] = useState('');
-  const [uploadedBy, setUploadedBy] = useState('');
+  const [description, setDescription] = useState("");
+  const [uploadedBy, setUploadedBy] = useState("");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -70,7 +76,7 @@ export default function UploadModal({ onUploadSuccess, isOpen, onClose }: Upload
     setDragActive(false);
 
     const file = e.dataTransfer.files?.[0];
-    if (file && file.type.startsWith('image/')) {
+    if (file && file.type.startsWith("image/")) {
       handleImageSelect(file);
     }
   };
@@ -87,7 +93,7 @@ export default function UploadModal({ onUploadSuccess, isOpen, onClose }: Upload
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedImage || !uploadedBy.trim()) {
-      setError('Please provide both an image and your name');
+      setError("Please provide both an image and your name");
       return;
     }
 
@@ -96,11 +102,14 @@ export default function UploadModal({ onUploadSuccess, isOpen, onClose }: Upload
 
     try {
       const formData = new FormData();
-      formData.append('image', selectedImage);
-      formData.append('metadata', JSON.stringify({
-        description,
-        uploaded_by: uploadedBy
-      }));
+      formData.append("image", selectedImage);
+      formData.append(
+        "metadata",
+        JSON.stringify({
+          description,
+          uploaded_by: uploadedBy,
+        })
+      );
 
       const uploadResponse = await fetch('/api/images/upload', {
         method: 'POST',
@@ -148,15 +157,19 @@ export default function UploadModal({ onUploadSuccess, isOpen, onClose }: Upload
       });
       
       // Clear form and close modal
-      setDescription('');
-      setUploadedBy('');
+      setDescription("");
+      setUploadedBy("");
       setSelectedImage(null);
       setPreview(null);
       setError(null);
       onClose();
     } catch (err: unknown) {
-      console.error('Upload error:', err);
-      setError(isErrorWithMessage(err) ? err.message : 'Failed to upload image. Please try again.');
+      console.error("Upload error:", err);
+      setError(
+        isErrorWithMessage(err)
+          ? err.message
+          : "Failed to upload image. Please try again."
+      );
     } finally {
       setUploading(false);
     }
@@ -164,18 +177,31 @@ export default function UploadModal({ onUploadSuccess, isOpen, onClose }: Upload
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] bg-gray-900 border border-gray-800 shadow-2xl">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-audiowide bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text">
-            Upload Your Extreme Sports Moment
-          </DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-6" onDragEnter={handleDrag}>
+      <DialogContent className="sm:max-w-[600px] bg-gray-900 border border-gray-800 shadow-2xl p-6">
+        <div className="flex items-center justify-between mb-6">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-audiowide bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text">
+              Upload Your Extreme Sports Moment
+            </DialogTitle>
+          </DialogHeader>
+          <button
+            onClick={onClose}
+            className="rounded-full p-2 hover:bg-gray-800 transition-colors"
+            aria-label="Close dialog"
+          >
+            <X className="h-6 w-6 text-gray-400" />
+          </button>
+        </div>
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-6"
+          onDragEnter={handleDrag}
+        >
           <div
-            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+            className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
               dragActive
-                ? 'border-purple-500 bg-purple-500/10'
-                : 'border-gray-700 hover:border-gray-600'
+                ? "border-purple-500 bg-purple-500/10"
+                : "border-gray-700 hover:border-gray-600"
             }`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
@@ -214,7 +240,10 @@ export default function UploadModal({ onUploadSuccess, isOpen, onClose }: Upload
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="uploadedBy" className="block text-sm font-medium text-gray-300 mb-2">
+              <label
+                htmlFor="uploadedBy"
+                className="block text-sm font-medium text-gray-300 mb-2"
+              >
                 Your Name
               </label>
               <input
@@ -229,7 +258,10 @@ export default function UploadModal({ onUploadSuccess, isOpen, onClose }: Upload
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-2">
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium text-gray-300 mb-2"
+              >
                 Description
               </label>
               <textarea
@@ -243,27 +275,52 @@ export default function UploadModal({ onUploadSuccess, isOpen, onClose }: Upload
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={!selectedImage || uploading || !uploadedBy.trim()}
-            className={`w-full py-3 px-4 rounded-md text-white font-medium relative ${
-              !selectedImage || uploading || !uploadedBy.trim()
-                ? 'bg-gray-700 cursor-not-allowed'
-                : 'bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700'
-            }`}
-          >
-            {uploading ? (
-              <span className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Uploading...
-              </span>
-            ) : (
-              'Upload Image'
-            )}
-          </button>
+          <div className="flex gap-4 mt-8">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 py-3 px-4 rounded-md text-white font-medium bg-gray-700 hover:bg-gray-600 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={!selectedImage || uploading || !uploadedBy.trim()}
+              className={`flex-1 py-3 px-4 rounded-md text-white font-medium relative ${
+                !selectedImage || uploading || !uploadedBy.trim()
+                  ? "bg-gray-700 cursor-not-allowed"
+                  : "bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700"
+              }`}
+            >
+              {uploading ? (
+                <span className="flex items-center justify-center">
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Uploading...
+                </span>
+              ) : (
+                "Upload Image"
+              )}
+            </button>
+          </div>
 
           {uploading && (
             <div className="mt-4 p-4 bg-purple-900/20 border border-purple-800 rounded-md text-purple-300">
