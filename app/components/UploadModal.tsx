@@ -93,7 +93,7 @@ export default function UploadModal({
         "metadata",
         JSON.stringify({
           description,
-          uploaded_by: uploadedBy,
+          uploadedBy: uploadedBy,
         })
       );
 
