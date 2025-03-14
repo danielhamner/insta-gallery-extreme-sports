@@ -1,4 +1,5 @@
 import Image from "next/image";
+import ImageModal from "./ImageModal";
 import { useState } from "react";
 
 interface GalleryImage {
@@ -10,32 +11,32 @@ interface GalleryImage {
 const mockImages: GalleryImage[] = [
   {
     id: "1",
-    url: "https://images.unsplash.com/photo-1564415315949-7a0c4c73aab4?auto=format&fit=crop&w=800&q=80",
+    url: "https://images.unsplash.com/photo-1564415315949-7a0c4c73aab4?auto=format&fit=crop&w=1600&q=80",
     description: "Snowboarder jumping through the air",
   },
   {
     id: "2",
-    url: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=80",
+    url: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=1600&q=80",
     description: "Mountain biker on a trail",
   },
   {
     id: "3",
-    url: "https://images.unsplash.com/photo-1549880338-65ddcdfd017b?auto=format&fit=crop&w=800&q=80",
+    url: "https://images.unsplash.com/photo-1549880338-65ddcdfd017b?auto=format&fit=crop&w=1600&q=80",
     description: "Skier in the mountains",
   },
   {
     id: "4",
-    url: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=80",
+    url: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=1600&q=80",
     description: "Rock climber scaling a cliff",
   },
   {
     id: "5",
-    url: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&w=800&q=80",
+    url: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&w=1600&q=80",
     description: "Surfer riding a wave",
   },
   {
     id: "6",
-    url: "https://images.unsplash.com/photo-1583123810408-23e7b5d1af9f?auto=format&fit=crop&w=800&q=80",
+    url: "https://images.unsplash.com/photo-1583123810408-23e7b5d1af9f?auto=format&fit=crop&w=1600&q=80",
     description: "Skateboarder in action",
   },
 ];
@@ -44,7 +45,7 @@ function GalleryImage({ image }: { image: GalleryImage }) {
   const [isLoading, setIsLoading] = useState(true);
 
   return (
-    <div className="relative aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 bg-gray-800 group">
+    <div className="relative aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 bg-gray-800 group cursor-pointer">
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
           <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
@@ -74,11 +75,23 @@ function GalleryImage({ image }: { image: GalleryImage }) {
 }
 
 export default function Gallery() {
+  const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 p-6">
-      {mockImages.map((image) => (
-        <GalleryImage key={image.id} image={image} />
-      ))}
-    </div>
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 p-6">
+        {mockImages.map((image) => (
+          <div key={image.id} onClick={() => setSelectedImage(image)}>
+            <GalleryImage image={image} />
+          </div>
+        ))}
+      </div>
+
+      <ImageModal
+        isOpen={!!selectedImage}
+        onClose={() => setSelectedImage(null)}
+        image={selectedImage}
+      />
+    </>
   );
 }
