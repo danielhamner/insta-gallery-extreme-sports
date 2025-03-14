@@ -44,10 +44,10 @@ function GalleryImage({ image }: { image: GalleryImage }) {
   const [isLoading, setIsLoading] = useState(true);
 
   return (
-    <div className="relative aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 bg-gray-100">
+    <div className="relative aspect-square overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 bg-gray-800 group">
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
+          <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
       )}
       <Image
@@ -56,14 +56,16 @@ function GalleryImage({ image }: { image: GalleryImage }) {
         width={800}
         height={800}
         className={`w-full h-full object-cover transition-all duration-300 ${
-          isLoading ? "scale-110 blur-sm" : "scale-100 blur-0 hover:scale-110"
+          isLoading
+            ? "scale-110 blur-sm"
+            : "scale-100 blur-0 group-hover:scale-110 brightness-90"
         }`}
         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 16.67vw"
-        priority={parseInt(image.id) <= 3} // Load first 3 images immediately
+        priority={parseInt(image.id) <= 3}
         onLoadingComplete={() => setIsLoading(false)}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end">
-        <p className="text-white p-4 text-sm font-medium">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end">
+        <p className="text-white p-4 text-sm font-medium transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
           {image.description}
         </p>
       </div>
@@ -73,7 +75,7 @@ function GalleryImage({ image }: { image: GalleryImage }) {
 
 export default function Gallery() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 p-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 p-6">
       {mockImages.map((image) => (
         <GalleryImage key={image.id} image={image} />
       ))}
