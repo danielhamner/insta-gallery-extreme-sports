@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
 import Image from 'next/image';
@@ -131,16 +131,18 @@ export default function UploadModal({ onUploadSuccess, isOpen, onClose }: Upload
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] bg-gray-900 border border-gray-800 shadow-2xl">
         <DialogHeader>
-          <DialogTitle>Upload Your Extreme Sports Moment</DialogTitle>
+          <DialogTitle className="text-2xl font-audiowide bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 text-transparent bg-clip-text">
+            Upload Your Extreme Sports Moment
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6" onDragEnter={handleDrag}>
           <div
             className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
               dragActive
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-300 hover:border-gray-400'
+                ? 'border-purple-500 bg-purple-500/10'
+                : 'border-gray-700 hover:border-gray-600'
             }`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
@@ -157,22 +159,19 @@ export default function UploadModal({ onUploadSuccess, isOpen, onClose }: Upload
                 if (file) handleImageSelect(file);
               }}
             />
-            <label
-              htmlFor="image-upload"
-              className="cursor-pointer block"
-            >
+            <label htmlFor="image-upload" className="cursor-pointer block">
               {preview ? (
                 <div className="relative w-full aspect-video">
                   <Image
                     src={preview}
                     alt="Preview"
                     fill
-                    className="object-contain"
+                    className="object-contain rounded-md"
                   />
                 </div>
               ) : (
                 <div className="py-12">
-                  <p className="text-gray-500">
+                  <p className="text-gray-400">
                     Drag and drop your image here, or click to select
                   </p>
                 </div>
@@ -182,7 +181,7 @@ export default function UploadModal({ onUploadSuccess, isOpen, onClose }: Upload
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="uploadedBy" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="uploadedBy" className="block text-sm font-medium text-gray-300 mb-2">
                 Your Name
               </label>
               <input
@@ -190,21 +189,21 @@ export default function UploadModal({ onUploadSuccess, isOpen, onClose }: Upload
                 id="uploadedBy"
                 value={uploadedBy}
                 onChange={(e) => setUploadedBy(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 placeholder-gray-500"
                 placeholder="Enter your name..."
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="description" className="block text-sm font-medium text-gray-300 mb-2">
                 Description
               </label>
               <textarea
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500 placeholder-gray-500"
                 rows={3}
                 placeholder="Describe your extreme sports moment..."
               />
@@ -216,8 +215,8 @@ export default function UploadModal({ onUploadSuccess, isOpen, onClose }: Upload
             disabled={!selectedImage || uploading || !uploadedBy.trim()}
             className={`w-full py-3 px-4 rounded-md text-white font-medium relative ${
               !selectedImage || uploading || !uploadedBy.trim()
-                ? 'bg-gray-400'
-                : 'bg-blue-600 hover:bg-blue-700'
+                ? 'bg-gray-700 cursor-not-allowed'
+                : 'bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700'
             }`}
           >
             {uploading ? (
@@ -234,13 +233,13 @@ export default function UploadModal({ onUploadSuccess, isOpen, onClose }: Upload
           </button>
 
           {uploading && (
-            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md text-blue-600">
+            <div className="mt-4 p-4 bg-purple-900/20 border border-purple-800 rounded-md text-purple-300">
               Uploading your image... Please wait.
             </div>
           )}
 
           {error && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-md text-red-600">
+            <div className="mt-4 p-4 bg-red-900/20 border border-red-800 rounded-md text-red-300">
               {error}
             </div>
           )}
@@ -248,4 +247,4 @@ export default function UploadModal({ onUploadSuccess, isOpen, onClose }: Upload
       </DialogContent>
     </Dialog>
   );
-} 
+}

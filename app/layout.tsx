@@ -1,25 +1,29 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+import { Audiowide, Inter } from "next/font/google";
+
+import type { Metadata } from "next";
+
+const inter = Inter({ subsets: ["latin"] });
+const audiowide = Audiowide({
+  weight: "400",
   subsets: ["latin"],
-  display: "swap",
+  variable: "--font-audiowide",
 });
 
 export const metadata: Metadata = {
   title: "Extreme Sports Gallery",
-  description: "Upload and share your extreme sports moments",
+  description: "A gallery of extreme sports moments",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased`}>
+      <body className={`${inter.className} ${audiowide.variable}`}>
         {children}
       </body>
     </html>
